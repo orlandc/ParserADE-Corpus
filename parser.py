@@ -10,7 +10,11 @@ for r, d, f in os.walk(path):
 
 for i, f in enumerate(files):
     path2 = f.replace("ADE-Corpus-V2/", "raw/")
-    name2 = path2.replace(".txt", "_raw.txt")
+    if(f.find('.txt') != -1):
+        name2 = path2.replace(".txt", "_raw.txt")
+    else:
+        name2 = path2.replace(".rel", "_raw.txt")
+    
     if not os.path.exists(os.path.dirname(name2)):
         os.makedirs(os.path.dirname(name2))
     
@@ -21,12 +25,18 @@ for i, f in enumerate(files):
     k = open(f, "r")
     
     if(f.find('DRUG') != -1):
+        previus_line = ''
         for line in k:
             pubmed_id, text = line.strip().split('|')[:2]
-            file2.write(text + "\n")
+            if(previus_line != text):
+                file2.write(text + "\n")
+                previus_line = text
     else:
+        previus_line = ''
         for line in k:
             text = ' '.join(line.strip().split(' ')[2:])
-            file2.write(text + "\n")
+            if(previus_line != text):
+                file2.write(text + "\n")
+                previus_line = text
 
     file2.close()
